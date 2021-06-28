@@ -1,28 +1,18 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App;
 
-use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\Model;
 
-class MicropostsController extends Controller
+class Micropost extends Model
 {
-    public function index()
+    protected $fillable = ['content'];
+
+    /**
+     * この投稿を所有するユーザ。（ Userモデルとの関係を定義）
+     */
+    public function user()
     {
-        $data = [];
-        if (\Auth::check()) { // 認証済みの場合
-            // 認証済みユーザを取得
-            $user = \Auth::user();
-            // ユーザの投稿の一覧を作成日時の降順で取得
-            // （後のChapterで他ユーザの投稿も取得するように変更しますが、現時点ではこのユーザの投稿のみ取得します）
-            $microposts = $user->microposts()->orderBy('created_at', 'desc')->paginate(10);
-
-            $data = [
-                'user' => $user,
-                'microposts' => $microposts,
-            ];
-        }
-
-        // Welcomeビューでそれらを表示
-        return view('welcome', $data);
+        return $this->belongsTo(User::class);
     }
 }
